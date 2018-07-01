@@ -18,6 +18,9 @@ public class Earthquake {
 
     /* Constructor taking string date in format day.month.year*/
     public Earthquake(double magnitude, String location, String sDate) {
+        this.location = location;
+        this.magnitude = magnitude;
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
         try {

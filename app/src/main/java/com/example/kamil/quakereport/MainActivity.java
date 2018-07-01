@@ -29,9 +29,8 @@ public class MainActivity extends AppCompatActivity {
             earthquakes.add(new Earthquake(4.6, "ocean", "12.01.2213"));
 
             ListView earthquakeListView = (ListView) findViewById(R.id.list);
+            EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(this, earthquakes);
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, earthquakes);
-
-            earthquakeListView.setAdapter(adapter);
+            earthquakeListView.setAdapter(earthquakeAdapter);
         }
 }

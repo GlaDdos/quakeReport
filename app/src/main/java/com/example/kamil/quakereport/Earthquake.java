@@ -1,5 +1,6 @@
 package com.example.kamil.quakereport;
 
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,14 +11,17 @@ public class Earthquake {
     private String location;
     private Date date;
 
-    public Earthquake(double magnitude, String location, Date date) {
+    private String url;
+
+    public Earthquake(double magnitude, String location, Date date, String url) {
         this.magnitude = magnitude;
         this.location = location;
         this.date = date;
+        this.url = url;
     }
 
     /* Constructor taking string date in format day.month.year*/
-    public Earthquake(double magnitude, String location, String sDate) {
+    public Earthquake(double magnitude, String location, String sDate, String url) {
         this.location = location;
         this.magnitude = magnitude;
 
@@ -48,5 +52,9 @@ public class Earthquake {
     public String getDateString(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyy hh:mm");
         return dateFormat.format(date);
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

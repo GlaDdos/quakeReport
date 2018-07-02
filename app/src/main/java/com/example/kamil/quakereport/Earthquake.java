@@ -21,7 +21,7 @@ public class Earthquake {
         this.location = location;
         this.magnitude = magnitude;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm");
 
         try {
             this.date = dateFormat.parse(sDate);
@@ -46,7 +46,7 @@ public class Earthquake {
 
     //getter for date formatted to string
     public String getDateString(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyy hh:mm");
         return dateFormat.format(date);
     }
 }

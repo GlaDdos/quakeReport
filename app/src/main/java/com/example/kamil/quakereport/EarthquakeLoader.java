@@ -1,5 +1,7 @@
 package com.example.kamil.quakereport;
 
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,43 +19,40 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Helper methods related to requesting and receiving earthquake data from USGS.
- */
+public class EarthquakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>> {
+    public static final String LOG_TAG = EarthquakeLoader.class.getSimpleName();
+    private URL url;
 
-public final class QueryUtils {
+    EarthquakeLoader(Context context, String url) {
+        super(context);
 
-    public static final String LOG_TAG = QueryUtils.class.getSimpleName();
+        this.url = createUrl(url);
 
-    public static ArrayList<Earthquake> fetchEarthquakeData(String requestUrl){
+    }
 
-        String jsonResponse = null;
-        URL url = createUrl(requestUrl);
+    @Override
+    protected void onStartLoading() {
+        forceLoad();
+    }
+
+    @Override
+    public ArrayList<Earthquake> loadInBackground() {
+        ArrayList<Earthquake> earthquakes = new ArrayList<>();
 
         try {
-            jsonResponse = makeHttpRequest(url);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error closing input stream ", e);
-        }
+            String jsonData = makeHttpRequest(url);
+            earthquakes = extractEarthquakes(jsonData);
 
-        ArrayList<Earthquake> earthquakes = extractEarthquakes(jsonResponse);
+        } catch (IOException e) {
+            Log.d(LOG_TAG, "Problem retrieving earthquake json from API." + e);
+
+        }
 
         return earthquakes;
     }
 
-    private static URL createUrl(String sUrl) {
-        URL url = null;
 
-        try {
-            url = new URL(sUrl);
-        } catch (MalformedURLException e){
-            Log.e(LOG_TAG, "Error createing URL", e);
-        }
-
-        return url;
-    }
-
-    private static String makeHttpRequest(URL url) throws IOException {
+    private String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         if(url == null) {
@@ -97,6 +96,19 @@ public final class QueryUtils {
         return jsonResponse;
     }
 
+
+    private static URL createUrl(String sUrl) {
+        URL url = null;
+
+        try {
+            url = new URL(sUrl);
+        } catch (MalformedURLException e){
+            Log.e(LOG_TAG, "Error createing URL", e);
+        }
+
+        return url;
+    }
+
     private static String readFromStream (InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
 
@@ -114,7 +126,6 @@ public final class QueryUtils {
 
         return output.toString();
     }
-
 
     public static ArrayList<Earthquake> extractEarthquakes(String earthquakeJSON) {
 

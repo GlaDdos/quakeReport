@@ -1,6 +1,8 @@
 package com.example.kamil.quakereport;
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -14,19 +16,17 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Earthquake>>{
 
     public static final String LOG_TAG = MainActivity.class.getName();
     private static final String USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2016-01-01&endtime=2016-05-02&minfelt=50&minmagnitude=5";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        EarthQuakeAsyncTask task = new EarthQuakeAsyncTask();
-        task.execute(USGS_REQUEST_URL);
+        getLoaderManager().initLoader(1, null, this).forceLoad();
 
     }
 
@@ -54,27 +54,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class EarthQuakeAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
-
-        @Override
-        protected ArrayList<Earthquake> doInBackground(String... urls) {
-            if(urls.length < 1 || urls[0] == null) {
-                return null;
-            }
-
-            ArrayList<Earthquake> result = QueryUtils.fetchEarthquakeData(urls[0]);
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Earthquake> earthquakes) {
-            if(earthquakes == null) {
-                return;
-            }
-
-            updateUI(earthquakes);
-        }
+    @Override
+    public Loader<ArrayList<Earthquake>> onCreateLoader(int id, Bundle args) {
+        return new EarthquakeLoader(this, USGS_REQUEST_URL);
     }
 
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> data) {
+        updateUI(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Earthquake>> loader) {
+        updateUI(new ArrayList<Earthquake>());
+    }
 }
